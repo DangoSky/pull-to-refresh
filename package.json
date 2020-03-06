@@ -1,0 +1,8 @@
+{
+  "name": "pull-to-refresh",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/DangoSky/pull-to-refresh.git",
+  "author": "linxinyu <linxinyu@bytedance.com>",
+  "license": "MIT"
+}
