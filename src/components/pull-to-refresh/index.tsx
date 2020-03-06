@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import './style.less';
 
 class PullToRefresh extends PureComponent {
   render() {
