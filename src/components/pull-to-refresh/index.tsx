@@ -1,11 +1,18 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, ReactNode } from 'react';
 import './style.less';
 
-class PullToRefresh extends PureComponent {
+interface PullToRefreshProps {
+  children: ReactNode,
+  classname?: string,
+  refreshCallback?: Function,
+  hasMore?: boolean
+}
+
+class PullToRefresh extends PureComponent<PullToRefreshProps> {
   render() {
     return (
       <div>
-        <p>PullToRefresh</p>
+        {this.props.children}
       </div>
     )
   }

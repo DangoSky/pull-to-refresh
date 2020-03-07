@@ -1,10 +1,10 @@
 import React from 'react';
-import PullToRefresh from './components/pull-to-refresh';
+import PullToRefreshDemo from './components/pull-to-refresh/demo';
 
 function App() {
   return (
      <div>
-      <PullToRefresh />
+      <PullToRefreshDemo />
     </div>
   );
 }
