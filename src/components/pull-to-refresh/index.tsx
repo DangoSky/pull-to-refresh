@@ -1,10 +1,12 @@
 import React, { PureComponent, ReactNode } from 'react';
 import './style.less';
+import dropDownSvg from './images/drop-down.svg';
+import loadingSvg from './images/loading.svg';
 
 interface PullToRefreshProps {
   children: ReactNode,
   classname?: string,
-  refreshCallback?: Function,
+  refreshCallback?: (fn: () => void) => void,
   hasMore?: boolean,
   noMoreDataText?: string,
   pullToRefreshHint?: string,
@@ -24,7 +26,11 @@ class PullToRefresh extends PureComponent<PullToRefreshProps> {
   private divRef = React.createRef<HTMLDivElement>()
 
   state = {
-    footerStatus: STATUS.init,
+    footerStatus: STATUS.pullToRefresh,
+  }
+
+  componentDidMount() {
+    console.log(1);
   }
 
   renderFooter = () => {
@@ -36,14 +42,15 @@ class PullToRefresh extends PureComponent<PullToRefreshProps> {
     } = this.props;
     const { footerStatus } = this.state;
     const footerText = footerStatus === STATUS.pullToRefresh ? (
-      // TODO: icon
-      <div className="dangosky-will-load">
+      <>
+        <img src={dropDownSvg} alt=""/>
         <span>{pullToRefreshHint}</span>
-      </div>
+      </>
     ) : footerStatus === STATUS.loading ? (
-      <div className="dango-loading">
+      <>
+        <img src={loadingSvg} alt="" className="icon-loading" />
         <span>{loadingText}</span>
-      </div>
+      </>
     ) : null;
     return hasMore ? footerText : <p>{noMoreDataText}</p>;
   }
@@ -74,14 +81,15 @@ class PullToRefresh extends PureComponent<PullToRefreshProps> {
     // const ref = this.divRef.current;
     const ref = e.currentTarget;
     const { hasMore, refreshCallback } = this.props;
+    const { footerStatus } = this.state;
     // TODO: 指定距离刷新
     if (
       ref &&
       hasMore &&
       refreshCallback &&
+      footerStatus !== STATUS.loading &&  // 已经在 loading 状态就不再触发，避免在 loading 时还下拉页面导致多次触发
       ref.scrollHeight <= ref.scrollTop + ref.clientHeight
     ) {
-      console.log('bottom');
       this.setState({
         footerStatus: STATUS.loading
       })

@@ -1,20 +1,35 @@
 .dangosky-pull-refresh-container {
   height: 100%;
-  // display: flex;
-  // flex-direction: column;
   overflow-x: hidden;
   overflow-y: scroll;
   .dangosky-body {
-    // flex: 1;
     overflow-x: hidden;
     overflow-y: scroll;
   }
   .dangosky-footer {
-    height: 25px;
-    line-height: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin-top: 20px;
     text-align: center;
     font-size: 14px;
     color: #8f959e;
+    img {
+      margin-right: 4px;
+      width: 16px;
+      height: 16px;
+    }
+    .icon-loading {
+      animation: icon-rotate 1s infinite normal linear;
+    }
+  }
+}
+
+@keyframes icon-rotate {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate((360deg));
   }
 }

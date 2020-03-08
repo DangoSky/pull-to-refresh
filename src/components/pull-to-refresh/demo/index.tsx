@@ -1,8 +1,9 @@
 import React, { PureComponent } from 'react';
 import PullToRefresh from '../index';
 import './style.less';
+import { resolve } from 'url';
 
-const ARR = Array.from(Array(20)).map((item, index) => index + 1);
+const ARR = Array.from(Array(15)).map((item, index) => index + 1);
 
 interface State {
   list: number[]
@@ -17,15 +18,26 @@ export default class Demo extends PureComponent<{}, State> {
   }
 
   componentDidMount() {
-    this.addData();
+    this.fetchData();
   }
 
-  addData = () => {
-    setTimeout(() => {
-      this.setState({
-        list: this.state.list.concat(ARR)
-      })
-    }, 500);
+  fetchData = () => {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        console.log(this.state.list);
+        this.setState({
+          list: this.state.list.concat(ARR)
+        }, () => {
+          console.log(this.state.list);
+        })
+        resolve();
+      }, 1000);
+    })
+  }
+
+  handleMore = async (resolve: () => void) => {
+    await this.fetchData();
+    resolve();
   }
 
   renderList = () => {
@@ -42,7 +54,7 @@ export default class Demo extends PureComponent<{}, State> {
       <div className="box">
         <PullToRefresh
           hasMore
-          refreshCallback={this.addData}
+          refreshCallback={this.handleMore}
         >
           <div className="container">
             { this.renderList() }
