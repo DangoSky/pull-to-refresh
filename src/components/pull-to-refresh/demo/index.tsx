@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import PullToRefresh from '../index';
 import './style.less';
 
-const ARR = [1, 2, 3, 4, 5, 6];
+const ARR = Array.from(Array(20)).map((item, index) => index + 1);
 
 interface State {
   list: number[]
@@ -20,7 +20,7 @@ export default class Demo extends PureComponent<{}, State> {
     this.addData();
   }
 
-  addData() {
+  addData = () => {
     setTimeout(() => {
       this.setState({
         list: this.state.list.concat(ARR)
@@ -28,7 +28,7 @@ export default class Demo extends PureComponent<{}, State> {
     }, 500);
   }
 
-  renderList() {
+  renderList = () => {
     const { list } = this.state;
     return list.map((item, index) => {
       return (
@@ -39,13 +39,16 @@ export default class Demo extends PureComponent<{}, State> {
 
   render() {
     return (
-      <>
-        <PullToRefresh>
+      <div className="box">
+        <PullToRefresh
+          hasMore
+          refreshCallback={this.addData}
+        >
           <div className="container">
             { this.renderList() }
           </div>
         </PullToRefresh>
-      </>
+      </div>
     )
   }
 }
