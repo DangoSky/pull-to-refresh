@@ -6,14 +6,14 @@ import loadingSvg from './images/loading.svg';
 interface PullToRefreshProps {
   children: ReactNode,
   classname?: string,
+  initData: (fn: () => void) => void,
   refreshCallback?: (fn: () => void) => void,
+  distance?: number,
   hasMore?: boolean,
   noMoreDataText?: string,
   pullToRefreshHint?: string,
   loadingIcon?: ReactNode,
-  loadingIconStatus?: 'normal' | 'rotate'
   loadingText?: string,
-  
 }
 
 const STATUS = {
@@ -26,11 +26,16 @@ class PullToRefresh extends PureComponent<PullToRefreshProps> {
   private divRef = React.createRef<HTMLDivElement>()
 
   state = {
-    footerStatus: STATUS.pullToRefresh,
+    footerStatus: STATUS.init,
   }
 
   componentDidMount() {
-    console.log(1);
+    // 初始化数据后通过回调的形式来改变 footerStatus，避免文案会闪变
+    this.props.initData(() => {
+      this.setState({
+        footerStatus: STATUS.pullToRefresh
+      });
+    })
   }
 
   renderFooter = () => {
@@ -79,16 +84,15 @@ class PullToRefresh extends PureComponent<PullToRefreshProps> {
   scroll = (e: any) => {
     // TODO：可以不使用 ref 而使用 e.currentTarget？
     // const ref = this.divRef.current;
-    const ref = e.currentTarget;
-    const { hasMore, refreshCallback } = this.props;
+    const ref = e.currentTarget as HTMLDivElement;
+    const { hasMore, refreshCallback, distance = 0 } = this.props;
     const { footerStatus } = this.state;
-    // TODO: 指定距离刷新
     if (
       ref &&
       hasMore &&
       refreshCallback &&
       footerStatus !== STATUS.loading &&  // 已经在 loading 状态就不再触发，避免在 loading 时还下拉页面导致多次触发
-      ref.scrollHeight <= ref.scrollTop + ref.clientHeight
+      ref.scrollHeight - distance <= ref.scrollTop + ref.clientHeight
     ) {
       this.setState({
         footerStatus: STATUS.loading
@@ -96,7 +100,7 @@ class PullToRefresh extends PureComponent<PullToRefreshProps> {
       refreshCallback(() => {
         // 加载数据完成后改变 footer 状态
         this.setState({
-          footerStatus: STATUS.init
+          footerStatus: STATUS.pullToRefresh
         })
       });
     }

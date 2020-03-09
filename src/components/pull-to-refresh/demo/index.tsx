@@ -17,10 +17,6 @@ export default class Demo extends PureComponent<{}, State> {
     }
   }
 
-  componentDidMount() {
-    this.fetchData();
-  }
-
   fetchData = () => {
     return new Promise(resolve => {
       setTimeout(() => {
@@ -54,7 +50,9 @@ export default class Demo extends PureComponent<{}, State> {
       <div className="box">
         <PullToRefresh
           hasMore
+          initData={this.handleMore}
           refreshCallback={this.handleMore}
+          distance={180}
         >
           <div className="container">
             { this.renderList() }
