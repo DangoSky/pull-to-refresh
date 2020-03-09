@@ -8,15 +8,16 @@ interface PullRefreshProps {
   classname?: string,
   initData: (fn: () => void) => void,
   refreshCallback?: (fn: () => void) => void,
-  distancePullUpLoad?: number,
   hasMore?: boolean,
   noMoreDataText?: string,
   pullUpLoadHint?: string,    // 上拉加载更多提示语
   loadingIcon?: ReactNode,    // 加载中显示的 icon
   loadingText?: string,       // 正在加载的文案
+  distancePullUpLoad?: number,  // 距离底部多大距离就开始加载更多数据
   pullToRefreshText?: string,     // 下拉刷新提示语
-  distancePullToRefresh?: number // 下拉多大的距离后松开就刷新
-  loosenRefreshText?: string      // 松开刷新的文案
+  loosenRefreshText?: string,      // 松开刷新的文案
+  refreshingText?: string         // 正在刷新的文案
+  distancePullToRefresh?: number, // 下拉多大的距离后松开就刷新
 }
 
 const STATUS = {
@@ -24,7 +25,8 @@ const STATUS = {
   pullUpLoad: 'pull-up-load',
   loading: 'loading',
   pullToRefresh: 'pull-to-refresh',
-  loosenRefresh: 'loosen-refresh'
+  loosenRefresh: 'loosen-refresh',
+  refreshing: 'refreshing'
 }
 
 class PullRefresh extends PureComponent<PullRefreshProps> {
@@ -102,14 +104,19 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
     const { distancePullToRefresh = 60 } = this.props;
     const touchDistance = e.touches[0].clientY - PullRefresh.initialTouch.clientY;
     const { scrollTop } = e.currentTarget;
-    console.log(PullRefresh.initialTouch);
-    console.log(scrollTop, touchDistance);
+    // console.log(PullRefresh.initialTouch);
+    // console.log(scrollTop, touchDistance);
     // 下拉页面 && 到了页面顶部
     if (touchDistance > 0 && scrollTop <= 0) {
-      const pullHeight = this.easing(touchDistance);
+      // 应该下拉的距离
+      let pullDistance = touchDistance - PullRefresh.initialTouch.scrollTop;
+      if (pullDistance < 0) {
+        pullDistance = 0;
+      }
+      const pullHeight = this.easing(pullDistance);
+      if (pullHeight) e.preventDefault();// 减弱滚动
       console.log(pullHeight);
       this.setState({
-        // pullHeight: touchDistance,
         pullHeight,
         headerStatus: pullHeight > distancePullToRefresh ? STATUS.loosenRefresh : STATUS.pullToRefresh,
       })
@@ -117,7 +124,19 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
   }
 
   touchEnd = (e: any) => {
-
+    const { headerStatus } = this.state;
+    if (headerStatus === STATUS.loosenRefresh) {
+      this.setState({
+        headerStatus: STATUS.refreshing,
+        pullHeight: 0
+      })
+      // callback
+    } else {
+      this.setState({
+        headerStatus: STATUS.init,
+        pullHeight: 0
+      })
+    }
   }
 
   easing(distance: any) {
@@ -160,12 +179,6 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
   }
 
   render() {
-    const {
-      hasMore,
-      noMoreDataText = '无更多数据',
-      pullUpLoadHint = '下拉页面加载更多数据',
-      loadingText = '正在加载'
-    } = this.props;
     const { pullHeight } = this.state;
     const style = pullHeight ? {
       transform: `translateY(${pullHeight}px)`
