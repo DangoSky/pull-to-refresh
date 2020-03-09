@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import PullToRefresh from '../index';
+import PullRefresh from '../index';
 import './style.less';
 import { resolve } from 'url';
 
@@ -47,17 +47,16 @@ export default class Demo extends PureComponent<{}, State> {
 
   render() {
     return (
-      <div className="box">
-        <PullToRefresh
+      <div className="container">
+        <PullRefresh
           hasMore
           initData={this.handleMore}
           refreshCallback={this.handleMore}
-          distance={180}
         >
-          <div className="container">
+          <div className="content">
             { this.renderList() }
           </div>
-        </PullToRefresh>
+        </PullRefresh>
       </div>
     )
   }
