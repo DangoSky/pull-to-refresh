@@ -2,6 +2,7 @@ import React, { PureComponent, ReactNode } from 'react';
 import './style.less';
 import dropDownSvg from './images/drop-down.svg';
 import loadingSvg from './images/loading.svg';
+import completeSvg from './images/complete.svg';
 
 interface PullRefreshProps {
   children: ReactNode,
@@ -62,7 +63,6 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
       refreshingText = '正在刷新',
       refreshedText = '刷新完成'
     } = this.props;
-    // TODO: icon
     const pullRefresh = (
       <>
         <i></i>
@@ -77,11 +77,13 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
     )
     const refreshing = (
       <>
+        <img src={loadingSvg} alt="" className="icon-loading" />
         <span>{refreshingText}</span>
       </>
     );
     const refreshed = (
       <>
+        <img src={completeSvg} alt="" />
         <span>{refreshedText}</span>
       </>
     )
@@ -229,18 +231,10 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
     }
   }
 
-  animationEnd = () => {
-    console.log('animationEnd');
-    this.setState({
-      headerStatus: STATUS.init
-    })
-  }
-
   render() {
     const { pullHeight, headerStatus } = this.state;
     const style = pullHeight ? {
-      // transform: `translateY(${pullHeight}px)`
-      WebkitTransform: `translate3d(0,${pullHeight}px,0)`,
+      transform: `translateY(${pullHeight}px)`
     } : undefined;
 
     return (
@@ -251,7 +245,6 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
         onTouchStart={this.touchStart}
         onTouchMove={this.touchMove}
         onTouchEnd={this.touchEnd}
-        // onAnimationEnd={this.animationEnd}
       >
         <div className="dangosky-header">
           {this.renderHeader()}
