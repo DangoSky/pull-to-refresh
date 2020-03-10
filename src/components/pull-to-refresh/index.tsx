@@ -1,7 +1,8 @@
 import React, { PureComponent, ReactNode } from 'react';
 import './style.less';
-import dropDownSvg from './images/drop-down.svg';
+import dropDownSvg from './images/drop-down1.svg';
 import loadingSvg from './images/loading.svg';
+import dropUpSvg from './images/drop-up.svg';
 
 interface PullRefreshProps {
   children: ReactNode,
@@ -63,7 +64,7 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
   renderHeader = () => {
     const { headerStatus } = this.state;
     const {
-      pullToRefreshText = '上拉刷新',
+      pullToRefreshText = '下拉刷新',
       loosenRefreshText = '松开刷新',
       refreshingText = '正在刷新',
       refreshedText = '刷新完成'
@@ -71,11 +72,15 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
     // TODO: icon
     const pullRefresh = (
       <>
+        {/* <img src={dropDownSvg} alt=""/> */}
+        <i></i>
         <span>{pullToRefreshText}</span>
       </>
     );
     const loosenRefresh = (
       <>
+        {/* <img src={dropUpSvg} alt=""/> */}
+        <i></i>
         <span>{loosenRefreshText}</span>
       </>
     )
@@ -90,6 +95,7 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
       </>
     )
     switch(headerStatus) {
+      // default: pullRefresh;
       case STATUS.pullToRefresh: return pullRefresh;
       case STATUS.loosenRefresh: return loosenRefresh;
       case STATUS.refreshing: return refreshing;
@@ -102,7 +108,7 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
     const {
       hasMore,
       noMoreDataText = '无更多数据',
-      pullUpLoadHint = '下拉页面加载更多数据',
+      pullUpLoadHint = '上拉页面加载更多数据',
       loadingText = '正在加载'
     } = this.props;
     const { footerStatus } = this.state;
@@ -168,7 +174,7 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
     if (headerStatus === STATUS.loosenRefresh) {
       this.setState({
         headerStatus: STATUS.refreshing,
-        // pullHeight: 0
+        // 松开后先不把 pullHeight 置为 0，否则无法做动画回到页面上方。通过在样式中写 translate 来使它缓动上去
       })
       if (refreshFn) {
         refreshFn(() => {
@@ -180,7 +186,7 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
               this.setState({
                 headerStatus: STATUS.init,
               })
-            }, 1000);
+            }, 500);
           })
         });
         

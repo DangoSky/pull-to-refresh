@@ -16,7 +16,9 @@
   }
   .dangosky-header {
     height: 45px;
-    border-bottom: 1px solid #eee;
+    // border-bottom: 1px solid #eee;
+    position: absolute;
+    width: 100%;
     .dangosky-common;
   }
   &.status-init {
@@ -32,9 +34,45 @@
       transition: transform 0.5s;
     }
     .dangosky-header {
-      position: absolute;
+      // position: absolute;
       height: 45px;
-      width: 100%;
+      // width: 100%;
+    }
+  }
+  &.status-pull-to-refresh,
+  &.status-loosen-refresh {
+    i {
+      display: inline-block;
+      position: relative;
+      height: 16px;
+      border-left: 1px solid;
+      margin-right: 8px;
+      transition: transform 0.3s ease;
+      
+      &:before,
+      &:after {
+        content: "";
+        position: absolute;
+        font-size: 0.5em;
+        width: 1em;
+        bottom: 0px;
+        border-top: 1px solid;
+      }
+      &:before {
+        right: 1px;
+        transform: rotate(50deg);
+        transform-origin: right;
+      }
+      &:after {
+        left: 0px;
+        transform: rotate(-50deg);
+        transform-origin: left;
+      }
+    }
+  }
+  &.status-loosen-refresh {
+    i {
+      transform: rotate(180deg);
     }
   }
   .dangosky-footer {

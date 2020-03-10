@@ -38,7 +38,7 @@ export default class Demo extends PureComponent<{}, State> {
           console.log(this.state.list);
         })
         resolve();
-      }, 5000);
+      }, 1000);
     })
   }
 
