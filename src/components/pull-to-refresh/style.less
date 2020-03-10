@@ -1,3 +1,5 @@
+@headerHeight: 45px;
+
 .dangosky-pull-refresh-container {
   height: 100%;
   overflow-x: hidden;
@@ -15,28 +17,27 @@
     }
   }
   .dangosky-header {
-    height: 45px;
-    // border-bottom: 1px solid #eee;
+    .dangosky-common;
+    height: @headerHeight;
     position: absolute;
     width: 100%;
-    .dangosky-common;
   }
   &.status-init {
     .dangosky-header {
-      height: 0;
-      transition: height .5s;
+      // height: 0;
+      // transition: height 2.5s;
+      // overflow: hidden;
     }
-  }
-  // touchEnd 时开始刷新，body 缓动回页面上方
-  &.status-refreshing {
     .dangosky-body {
-      transform: translateY(45px) !important;
       transition: transform 0.5s;
     }
-    .dangosky-header {
-      // position: absolute;
-      height: 45px;
-      // width: 100%;
+  }
+  &.status-refreshed,
+  &.status-refreshing {
+    .dangosky-body {
+      // 因为 header 是绝对定位，所以还需要腾出空间来展示 header
+      transform: translateY(@headerHeight); 
+      transition: transform 0.5s;
     }
   }
   &.status-pull-to-refresh,
@@ -48,7 +49,6 @@
       border-left: 1px solid;
       margin-right: 8px;
       transition: transform 0.3s ease;
-      
       &:before,
       &:after {
         content: "";

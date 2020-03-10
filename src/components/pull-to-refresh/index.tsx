@@ -1,8 +1,7 @@
 import React, { PureComponent, ReactNode } from 'react';
 import './style.less';
-import dropDownSvg from './images/drop-down1.svg';
+import dropDownSvg from './images/drop-down.svg';
 import loadingSvg from './images/loading.svg';
-import dropUpSvg from './images/drop-up.svg';
 
 interface PullRefreshProps {
   children: ReactNode,
@@ -53,12 +52,6 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
         footerStatus: STATUS.pullUpLoad
       });
     })
-    // const ref = this.divRef.current;
-    // if (ref) {
-    //   ref.addEventListener('touchmove', this.touchMove, {
-    //     passive: false
-    //   })
-    // }
   }
 
   renderHeader = () => {
@@ -72,14 +65,12 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
     // TODO: icon
     const pullRefresh = (
       <>
-        {/* <img src={dropDownSvg} alt=""/> */}
         <i></i>
         <span>{pullToRefreshText}</span>
       </>
     );
     const loosenRefresh = (
       <>
-        {/* <img src={dropUpSvg} alt=""/> */}
         <i></i>
         <span>{loosenRefreshText}</span>
       </>
@@ -95,7 +86,6 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
       </>
     )
     switch(headerStatus) {
-      // default: pullRefresh;
       case STATUS.pullToRefresh: return pullRefresh;
       case STATUS.loosenRefresh: return loosenRefresh;
       case STATUS.refreshing: return refreshing;
@@ -144,10 +134,6 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
     const { distancePullToRefresh = 60 } = this.props;
     const touchDistance = e.touches[0].clientY - PullRefresh.initialTouch.clientY;
     const { scrollTop } = e.currentTarget;
-    // if(!this.divRef.current) return;
-    // const { scrollTop } = this.divRef.current;
-    // console.log(PullRefresh.initialTouch);
-    // console.log(scrollTop, touchDistance);
     // 下拉页面 && 到了页面顶部
     if (touchDistance > 0 && scrollTop <= 0) {
       // 应该下拉的距离
@@ -174,13 +160,12 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
     if (headerStatus === STATUS.loosenRefresh) {
       this.setState({
         headerStatus: STATUS.refreshing,
-        // 松开后先不把 pullHeight 置为 0，否则无法做动画回到页面上方。通过在样式中写 translate 来使它缓动上去
+        pullHeight: 0
       })
       if (refreshFn) {
         refreshFn(() => {
           this.setState({
             headerStatus: STATUS.refreshed,
-            pullHeight: 0
           }, () => {
             setTimeout(() => {
               this.setState({
