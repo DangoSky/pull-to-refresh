@@ -1,9 +1,8 @@
 import React, { PureComponent } from 'react';
 import PullRefresh from '../index';
 import './style.less';
-import { resolve } from 'url';
 
-const ARR = Array.from(Array(15)).map((item, index) => index + 1);
+const ARR = Array.from(Array(25)).map((item, index) => index + 1);
 
 interface State {
   list: number[]

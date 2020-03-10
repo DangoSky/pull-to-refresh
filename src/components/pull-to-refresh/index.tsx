@@ -6,21 +6,21 @@ import completeSvg from './images/complete.svg';
 
 interface PullRefreshProps {
   children: ReactNode,
-  classname?: string,
-  initData: (fn: () => void) => void,
-  loadFn?: (fn: () => void) => void,
-  refreshFn?: (fn: () => void) => void,
-  hasMore?: boolean,
-  noMoreDataText?: string,
-  pullUpLoadHint?: string,    // 上拉加载更多提示语
-  loadingIcon?: ReactNode,    // 加载中显示的 icon
-  loadingText?: string,       // 正在加载的文案
-  distancePullUpLoad?: number,  // 距离底部多大距离就开始加载更多数据
-  pullToRefreshText?: string,     // 下拉刷新提示语
-  loosenRefreshText?: string,      // 松开刷新的文案
-  refreshingText?: string         // 正在刷新的文案
-  refreshedText?: string          // 刷新完成的文案
-  distancePullToRefresh?: number, // 下拉多大的距离后松开就刷新
+  className?: string,
+  initData: (fn: () => void) => void,     // 初始化数据的函数
+  loadFn?: (fn: () => void) => void,      // 上拉页面后加载更多的函数，
+  refreshFn?: (fn: () => void) => void,   // 下拉页面后刷新数据的函数，不传的话表示不开启下拉刷新功能
+  hasMore?: boolean,              // 是否还有更多数据
+  noMoreDataText?: string,        // 没有更多数据的文案
+  pullUpLoadHint?: string,        // 上拉加载更多的文案
+  loadingIcon?: ReactNode,        // 加载中显示的 icon
+  loadingText?: string,           // 正在加载的文案
+  distancePullUpLoad?: number,    // 距离底部多大距离就开始加载更多数据
+  pullToRefreshText?: string,     // 下拉刷新的文案
+  loosenRefreshText?: string,     // 松开刷新的文案
+  refreshingText?: string,        // 正在刷新的文案
+  refreshedText?: string,         // 刷新完成的文案
+  distancePullToRefresh?: number, // 下拉多大的距离后松开就开始刷新
 }
 
 const STATUS = {
@@ -47,6 +47,7 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
   }
 
   componentDidMount() {
+    // TODO: 优化
     // 初始化数据后通过回调的形式来改变 footerStatus，避免文案会闪变
     this.props.initData(() => {
       this.setState({
@@ -138,14 +139,13 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
     const { scrollTop } = e.currentTarget;
     // 下拉页面 && 到了页面顶部
     if (touchDistance > 0 && scrollTop <= 0) {
-      // 应该下拉的距离
+      // 应该下拉的距离。因为 touchStart 的时候可能存在 scrollTop，所以需要减去初始的 scrollTop
       let pullDistance = touchDistance - PullRefresh.initialTouch.scrollTop;
       if (pullDistance < 0) {
         pullDistance = 0;
-        PullRefresh.initialTouch.scrollTop = touchDistance;   // ?
+        PullRefresh.initialTouch.scrollTop = touchDistance;
       }
       const pullHeight = this.easing(pullDistance);
-      console.log(pullHeight);
       this.setState({
         pullHeight,
         headerStatus: pullHeight > distancePullToRefresh ? STATUS.loosenRefresh : STATUS.pullToRefresh,
@@ -153,7 +153,7 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
     }
   }
 
-  touchEnd = (e: any) => {
+  touchEnd = () => {
     if (!this.canRefresh()) {
       return;
     }
@@ -192,21 +192,12 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
     return refreshFn && !([STATUS.refreshing, STATUS.loading].includes(headerStatus));
   }
 
-  easing(distance: any) {
-    // t: current time,
-    // b: begInnIng value, 
-    // c: change In value, 
-    // d: duration
-    const t = distance;
-    const b = 0;
-    const d = window.screen.availHeight; // 允许拖拽的最大距离
-    const c = d / 2.5; // 提示标签最大有效拖拽距离
-  
-    return c * Math.sin(t / d * (Math.PI / 2)) + b;
+  easing(distance: number) {
+    const availHeight = window.screen.availHeight;
+    return (availHeight / 2.5) * Math.sin(distance / availHeight * (Math.PI / 2));
   }
 
   scroll = (e: any) => {
-    // scroll = (e: WheelEvent) => {
     // TODO：可以不使用 ref 而使用 e.currentTarget？
     // const ref = this.divRef.current;
     const ref = e.currentTarget as HTMLDivElement;
@@ -221,7 +212,7 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
     ) {
       this.setState({
         footerStatus: STATUS.loading
-      })
+      });
       loadFn(() => {
         // 加载数据完成后改变 footer 状态
         this.setState({
@@ -233,13 +224,14 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
 
   render() {
     const { pullHeight, headerStatus } = this.state;
+    const { className = '' } = this.props;
     const style = pullHeight ? {
       transform: `translateY(${pullHeight}px)`
     } : undefined;
 
     return (
       <div
-        className={`dangosky-pull-refresh-container status-${headerStatus}`}
+        className={`dangosky-pull-refresh-container status-${headerStatus} ${className}`}
         ref={this.divRef}
         onScroll={this.scroll}
         onTouchStart={this.touchStart}
