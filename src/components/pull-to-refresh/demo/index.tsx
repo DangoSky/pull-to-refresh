@@ -17,6 +17,17 @@ export default class Demo extends PureComponent<{}, State> {
     }
   }
 
+  // initData = (resolve) => {
+  //   setTimeout(() => {
+  //     console.log(this.state.list);
+  //     this.setState({
+  //       list: ARR
+  //     }, () => {
+  //       console.log(this.state.list);
+  //     })
+  //   }, 1000);
+  // }
+
   fetchData = () => {
     return new Promise(resolve => {
       setTimeout(() => {
@@ -27,7 +38,7 @@ export default class Demo extends PureComponent<{}, State> {
           console.log(this.state.list);
         })
         resolve();
-      }, 1000);
+      }, 5000);
     })
   }
 
@@ -51,7 +62,8 @@ export default class Demo extends PureComponent<{}, State> {
         <PullRefresh
           hasMore
           initData={this.handleMore}
-          refreshCallback={this.handleMore}
+          loadFn={this.handleMore}
+          refreshFn={this.handleMore}
         >
           <div className="content">
             { this.renderList() }

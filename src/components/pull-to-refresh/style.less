@@ -2,9 +2,6 @@
   height: 100%;
   overflow-x: hidden;
   overflow-y: scroll;
-  .dangosky-body {
-    transition: transform 1.3s ease;
-  }
   .dangosky-common {
     display: flex;
     justify-content: center;
@@ -18,9 +15,26 @@
     }
   }
   .dangosky-header {
+    height: 45px;
+    border-bottom: 1px solid #eee;
     .dangosky-common;
-    span {
-      margin-top: 20px;
+  }
+  &.status-init {
+    .dangosky-header {
+      height: 0;
+      transition: height .5s;
+    }
+  }
+  // touchEnd 时开始刷新，body 缓动回页面上方
+  &.status-refreshing {
+    .dangosky-body {
+      transform: translateY(45px) !important;
+      transition: transform 0.5s;
+    }
+    .dangosky-header {
+      position: absolute;
+      height: 45px;
+      width: 100%;
     }
   }
   .dangosky-footer {
