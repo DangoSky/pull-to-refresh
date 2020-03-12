@@ -13,21 +13,25 @@ interface PullRefreshProps {
   hasMore?: boolean,                // 是否还有更多数据
   noMoreDataText?: string,          // 没有更多数据的文案
   pullUpLoadText?: string,          // 上拉加载更多的文案
-  loadingIcon?: ReactNode,          // 加载中显示的 icon
   loadingText?: string,             // 正在加载的文案
   distancePullUpLoad?: number,      // 距离底部多大距离就开始加载更多数据
-  pullToRefreshText?: string,       // 下拉刷新的文案
+  pullDownRefreshText?: string,     // 下拉刷新的文案
   loosenRefreshText?: string,       // 松开刷新的文案
   refreshingText?: string,          // 正在刷新的文案
   refreshedText?: string,           // 刷新完成的文案
   distancePullDownRefresh?: number, // 下拉多大的距离后松开就开始刷新
+  loadingIcon?: ReactNode,          // 加载中的 icon
+  completeIcon?: ReactNode,         // 加载完成的 icon
+  pullUpIcon?: ReactNode,           // 上拉加载更多的 icon
+  pullDownIcon?: ReactNode,         // 下拉刷新的 icon
+  loosenIcon?: ReactNode,           // 松开刷新的 icon
 }
 
 const STATUS = {
   init: 'init',                       // 初始状态
   pullUpLoad: 'pull-up-load',         // 上拉加载更多
   loading: 'loading',                 // 加载中
-  pullToRefresh: 'pull-to-refresh',   // 下拉刷新
+  pullDownRefresh: 'pull-down-refresh',   // 下拉刷新
   loosenRefresh: 'loosen-refresh',    // 松开刷新
   refreshing: 'refreshing',           // 刷新中
   refreshed: 'refreshed'              // 刷新完成
@@ -57,37 +61,42 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
   renderHeader = () => {
     const { headerStatus } = this.state;
     const {
-      pullToRefreshText = '下拉刷新',
+      pullDownRefreshText = '下拉刷新',
       loosenRefreshText = '松开刷新',
       refreshingText = '正在刷新',
-      refreshedText = '刷新完成'
+      refreshedText = '刷新完成',
+      pullDownIcon,
+      loosenIcon,
+      loadingIcon,
+      completeIcon
     } = this.props;
+
     const pullRefresh = (
       <>
-        <i></i>
-        <span>{pullToRefreshText}</span>
+        {pullDownIcon ? pullDownIcon : <i></i>}
+        <span>{pullDownRefreshText}</span>
       </>
     );
     const loosenRefresh = (
       <>
-        <i></i>
+        {loosenIcon ? loosenIcon : <i></i>}
         <span>{loosenRefreshText}</span>
       </>
     )
     const refreshing = (
       <>
-        <img src={loadingSvg} alt="" className="icon-loading" />
+        {loadingIcon ? loadingIcon : <img src={loadingSvg} alt="" className="icon-loading" />}
         <span>{refreshingText}</span>
       </>
     );
     const refreshed = (
       <>
-        <img src={completeSvg} alt="" />
+        {completeIcon ? completeIcon : <img src={completeSvg} alt="" />}
         <span>{refreshedText}</span>
       </>
     )
     switch(headerStatus) {
-      case STATUS.pullToRefresh: return pullRefresh;
+      case STATUS.pullDownRefresh: return pullRefresh;
       case STATUS.loosenRefresh: return loosenRefresh;
       case STATUS.refreshing: return refreshing;
       case STATUS.refreshed: return refreshed;
@@ -100,17 +109,19 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
       hasMore,
       noMoreDataText = '无更多数据',
       pullUpLoadText = '上拉页面加载更多数据',
-      loadingText = '正在加载'
+      loadingText = '正在加载',
+      loadingIcon,
+      pullUpIcon
     } = this.props;
     const { footerStatus } = this.state;
     const footerText = footerStatus === STATUS.pullUpLoad ? (
       <>
-        <img src={dropDownSvg} alt=""/>
+        {pullUpIcon ? pullUpIcon : <img src={dropDownSvg} alt=""/>}
         <span>{pullUpLoadText}</span>
       </>
     ) : footerStatus === STATUS.loading ? (
       <>
-        <img src={loadingSvg} alt="" className="icon-loading" />
+        {loadingIcon ? loadingIcon : <img src={loadingSvg} alt="" className="icon-loading" />}
         <span>{loadingText}</span>
       </>
     ) : null;
@@ -142,7 +153,7 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
       const pullHeight = this.easing(pullDistance);
       this.setState({
         pullHeight,
-        headerStatus: pullHeight > distancePullDownRefresh ? STATUS.loosenRefresh : STATUS.pullToRefresh,
+        headerStatus: pullHeight > distancePullDownRefresh ? STATUS.loosenRefresh : STATUS.pullDownRefresh,
       })
     }
   }
