@@ -1,68 +1,31 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# 下拉刷新组件
 
-## Available Scripts
+## 提供的主要功能
 
-In the project directory, you can run:
+1. 下拉刷新
 
-### `yarn start`
+2. 上拉加载更多
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+## 支持的 Props
 
-### `yarn test`
-
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `yarn build`
-
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `yarn build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+| prop | 数据类型 | 说明 | 备注 |
+| ---- | --- | ------- | --- |
+| loadMoreFn |  (fn: () => void) => void |  上拉页面后加载更多的函数 | 可选
+| refreshFn |  (fn: () => void) => void | 下拉页面后刷新数据的函数，不传的话表示不开启下拉刷新功能 | 可选
+| className |  string | 外层类名 | 可选
+| hasMore |  boolean | 是否还有更多数据 | 可选，默认是`true`
+| noMoreDataText |  string | 没有更多数据的文案 | 可选，默认是`无更多数据`
+| pullUpLoadText |  string | 上拉加载更多的文案 | 可选，默认是`上拉页面加载更多数据`
+| loadingText |  string | 正在加载的文案 | 可选，默认是`正在加载`
+| distancePullUpLoad |  number | 距离底部多大距离就开始加载更多数据 | 可选，默认是`0`
+| pullDownRefreshText |  string | 下拉刷新的文案 | 可选，默认是`下拉刷新`
+| loosenRefreshText |  string | 松开刷新的文案 | 可选，默认是`松开刷新`
+| refreshingText |  string | 正在刷新的文案 | 可选，默认是`正在刷新`
+| refreshedText |  string | 刷新完成的文案 | 可选，默认是`刷新完成`
+| distancePullDownRefresh |  number | 下拉多大的距离后松开就开始刷新 | 可选，默认是`60px`
+| loadingIcon |  ReactNode | 加载中的 icon | 可选
+| completeIcon |  ReactNode | 加载完成的 icon | 可选
+| pullUpIcon |  ReactNode | 上拉加载更多的 icon | 可选
+| pullDownIcon |  ReactNode | 下拉刷新的 icon | 可选
+| loosenIcon |  ReactNode | 松开刷新的 icon | 可选

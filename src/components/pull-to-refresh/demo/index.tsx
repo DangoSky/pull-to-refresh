@@ -1,40 +1,55 @@
 import React, { PureComponent } from 'react';
 import PullRefresh from '../index';
 import './style.less';
+import { resolve } from 'uri-js';
 
 const ARR = Array.from(Array(15)).map((item, index) => index + 1);
 
 interface State {
-  list: number[]
+  list: number[],
+  hasMore: boolean
 }
 
 export default class Demo extends PureComponent<{}, State> {
   constructor(props: any) {
     super(props);
     this.state = {
-      list: []
+      list: [],
+      hasMore: true,
     }
   }
 
-  // initData = (resolve) => {
-  //   setTimeout(() => {
-  //     this.setState({
-  //       list: ARR
-  //     });
-  //     resolve();
-  //   }, 1000);
-  // }
+  componentDidMount() {
+    this.initData();
+  }
+
+  initData = () => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        this.setState({
+          list: ARR
+        });
+        resolve();
+      }, 1000);
+    })
+  }
+
+  refreshData = async (resolve: () => void) => {
+    await this.initData();
+    resolve();
+  }
 
   fetchData = () => {
     return new Promise(resolve => {
       setTimeout(() => {
         this.setState({
-          list: this.state.list.concat(ARR)
+          list: this.state.list.concat(ARR),
+          hasMore: this.state.list.length >= 45 ? false : true
         }, () => {
           console.log(this.state.list);
         })
         resolve();
-      }, 3000);
+      }, 2000);
     })
   }
 
@@ -56,10 +71,9 @@ export default class Demo extends PureComponent<{}, State> {
     return (
       <div className="container">
         <PullRefresh
-          hasMore
-          initData={this.handleMore}
-          loadFn={this.handleMore}
-          refreshFn={this.handleMore}
+          hasMore={this.state.hasMore}
+          loadMoreFn={this.handleMore}
+          refreshFn={this.refreshData}
         >
           <div className="content">
             { this.renderList() }

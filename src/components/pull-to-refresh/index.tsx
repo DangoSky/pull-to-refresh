@@ -6,11 +6,10 @@ import completeSvg from './images/complete.svg';
 
 interface PullRefreshProps {
   children: ReactNode,
-  className?: string,
-  initData: (fn: () => void) => void,     // 初始化数据的函数
-  loadFn?: (fn: () => void) => void,      // 上拉页面后加载更多的函数，
+  hasMore: boolean,                // 是否还有更多数据
+  className?: string,              // 外层类名
+  loadMoreFn?: (fn: () => void) => void,  // 上拉页面后加载更多的函数，
   refreshFn?: (fn: () => void) => void,   // 下拉页面后刷新数据的函数，不传的话表示不开启下拉刷新功能
-  hasMore?: boolean,                // 是否还有更多数据
   noMoreDataText?: string,          // 没有更多数据的文案
   pullUpLoadText?: string,          // 上拉加载更多的文案
   loadingText?: string,             // 正在加载的文案
@@ -47,15 +46,6 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
     headerStatus: STATUS.init,
     footerStatus: STATUS.init,
     pullHeight: 0,
-  }
-
-  componentDidMount() {
-    // 初始化数据后通过回调的形式来改变 footerStatus，避免文案闪变
-    this.props.initData(() => {
-      this.setState({
-        footerStatus: STATUS.pullUpLoad
-      });
-    })
   }
 
   renderHeader = () => {
@@ -107,6 +97,7 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
   renderFooter = () => {
     const {
       hasMore,
+      loadMoreFn,
       noMoreDataText = '无更多数据',
       pullUpLoadText = '上拉页面加载更多数据',
       loadingText = '正在加载',
@@ -116,7 +107,7 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
     const { footerStatus } = this.state;
     const footerText = footerStatus === STATUS.pullUpLoad ? (
       <>
-        {pullUpIcon ? pullUpIcon : <img src={dropDownSvg} alt=""/>}
+        {pullUpIcon ? pullUpIcon : <img src={dropDownSvg} alt="" />}
         <span>{pullUpLoadText}</span>
       </>
     ) : footerStatus === STATUS.loading ? (
@@ -125,7 +116,7 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
         <span>{loadingText}</span>
       </>
     ) : null;
-    return hasMore ? footerText : <p>{noMoreDataText}</p>;
+    return hasMore && loadMoreFn ? footerText : <p>{noMoreDataText}</p>;
   }
 
   touchStart = (e: any) => {
@@ -207,19 +198,19 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
 
   scroll = (e: any) => {
     const ref = e.currentTarget as HTMLDivElement;
-    const { hasMore, loadFn, distancePullUpLoad = 0 } = this.props;
+    const { hasMore, loadMoreFn, distancePullUpLoad = 0 } = this.props;
     const { footerStatus } = this.state;
     if (
       ref &&
       hasMore &&
-      loadFn &&
+      loadMoreFn &&
       footerStatus !== STATUS.loading &&  // 已经在 loading 状态就不再触发，避免在 loading 时还下拉页面导致多次触发
       ref.scrollHeight - distancePullUpLoad <= ref.scrollTop + ref.clientHeight
     ) {
       this.setState({
         footerStatus: STATUS.loading
       });
-      loadFn(() => {
+      loadMoreFn(() => {
         // 加载数据完成后改变 footer 状态
         this.setState({
           footerStatus: STATUS.pullUpLoad

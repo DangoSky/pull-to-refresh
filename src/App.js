@@ -3,9 +3,7 @@ import PullToRefreshDemo from './components/pull-to-refresh/demo';
 
 function App() {
   return (
-     <div>
-      <PullToRefreshDemo />
-    </div>
+    <PullToRefreshDemo />
   );
 }
 
