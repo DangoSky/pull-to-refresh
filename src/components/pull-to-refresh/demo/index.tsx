@@ -1,7 +1,6 @@
 import React, { PureComponent } from 'react';
 import PullRefresh from '../index';
 import './style.less';
-import { resolve } from 'uri-js';
 
 const ARR = Array.from(Array(15)).map((item, index) => index + 1);
 
@@ -19,15 +18,12 @@ export default class Demo extends PureComponent<{}, State> {
     }
   }
 
-  componentDidMount() {
-    this.initData();
-  }
-
   initData = () => {
     return new Promise((resolve) => {
       setTimeout(() => {
         this.setState({
-          list: ARR
+          list: ARR,
+          hasMore: true
         });
         resolve();
       }, 1000);
@@ -72,6 +68,7 @@ export default class Demo extends PureComponent<{}, State> {
       <div className="container">
         <PullRefresh
           hasMore={this.state.hasMore}
+          initData={this.refreshData}
           loadMoreFn={this.handleMore}
           refreshFn={this.refreshData}
         >

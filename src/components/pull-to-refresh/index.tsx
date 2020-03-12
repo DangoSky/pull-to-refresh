@@ -6,10 +6,11 @@ import completeSvg from './images/complete.svg';
 
 interface PullRefreshProps {
   children: ReactNode,
-  hasMore: boolean,                // 是否还有更多数据
-  className?: string,              // 外层类名
+  hasMore: boolean,                       // 是否还有更多数据
+  initData: (fn: () => void) => void,     // 初始化数据的函数
   loadMoreFn?: (fn: () => void) => void,  // 上拉页面后加载更多的函数，
   refreshFn?: (fn: () => void) => void,   // 下拉页面后刷新数据的函数，不传的话表示不开启下拉刷新功能
+  className?: string,               // 外层类名
   noMoreDataText?: string,          // 没有更多数据的文案
   pullUpLoadText?: string,          // 上拉加载更多的文案
   loadingText?: string,             // 正在加载的文案
@@ -27,13 +28,13 @@ interface PullRefreshProps {
 }
 
 const STATUS = {
-  init: 'init',                       // 初始状态
-  pullUpLoad: 'pull-up-load',         // 上拉加载更多
-  loading: 'loading',                 // 加载中
+  init: 'init',                           // 初始状态
+  pullUpLoad: 'pull-up-load',             // 上拉加载更多
+  loading: 'loading',                     // 加载中
   pullDownRefresh: 'pull-down-refresh',   // 下拉刷新
-  loosenRefresh: 'loosen-refresh',    // 松开刷新
-  refreshing: 'refreshing',           // 刷新中
-  refreshed: 'refreshed'              // 刷新完成
+  loosenRefresh: 'loosen-refresh',        // 松开刷新
+  refreshing: 'refreshing',               // 刷新中
+  refreshed: 'refreshed'                  // 刷新完成
 }
 
 class PullRefresh extends PureComponent<PullRefreshProps> {
@@ -46,6 +47,14 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
     headerStatus: STATUS.init,
     footerStatus: STATUS.init,
     pullHeight: 0,
+  }
+
+  componentDidMount() {
+    this.props.initData(() => {
+      this.setState({
+        footerStatus: this.props.hasMore ? STATUS.pullUpLoad : STATUS.init
+      })
+    });
   }
 
   renderHeader = () => {
