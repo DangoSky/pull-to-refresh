@@ -10,31 +10,30 @@ interface PullRefreshProps {
   initData: (fn: () => void) => void,     // 初始化数据的函数
   loadFn?: (fn: () => void) => void,      // 上拉页面后加载更多的函数，
   refreshFn?: (fn: () => void) => void,   // 下拉页面后刷新数据的函数，不传的话表示不开启下拉刷新功能
-  hasMore?: boolean,              // 是否还有更多数据
-  noMoreDataText?: string,        // 没有更多数据的文案
-  pullUpLoadHint?: string,        // 上拉加载更多的文案
-  loadingIcon?: ReactNode,        // 加载中显示的 icon
-  loadingText?: string,           // 正在加载的文案
-  distancePullUpLoad?: number,    // 距离底部多大距离就开始加载更多数据
-  pullToRefreshText?: string,     // 下拉刷新的文案
-  loosenRefreshText?: string,     // 松开刷新的文案
-  refreshingText?: string,        // 正在刷新的文案
-  refreshedText?: string,         // 刷新完成的文案
-  distancePullToRefresh?: number, // 下拉多大的距离后松开就开始刷新
+  hasMore?: boolean,                // 是否还有更多数据
+  noMoreDataText?: string,          // 没有更多数据的文案
+  pullUpLoadText?: string,          // 上拉加载更多的文案
+  loadingIcon?: ReactNode,          // 加载中显示的 icon
+  loadingText?: string,             // 正在加载的文案
+  distancePullUpLoad?: number,      // 距离底部多大距离就开始加载更多数据
+  pullToRefreshText?: string,       // 下拉刷新的文案
+  loosenRefreshText?: string,       // 松开刷新的文案
+  refreshingText?: string,          // 正在刷新的文案
+  refreshedText?: string,           // 刷新完成的文案
+  distancePullDownRefresh?: number, // 下拉多大的距离后松开就开始刷新
 }
 
 const STATUS = {
-  init: 'init',
-  pullUpLoad: 'pull-up-load',
-  loading: 'loading',
-  pullToRefresh: 'pull-to-refresh',
-  loosenRefresh: 'loosen-refresh',
-  refreshing: 'refreshing',
-  refreshed: 'refreshed'
+  init: 'init',                       // 初始状态
+  pullUpLoad: 'pull-up-load',         // 上拉加载更多
+  loading: 'loading',                 // 加载中
+  pullToRefresh: 'pull-to-refresh',   // 下拉刷新
+  loosenRefresh: 'loosen-refresh',    // 松开刷新
+  refreshing: 'refreshing',           // 刷新中
+  refreshed: 'refreshed'              // 刷新完成
 }
 
 class PullRefresh extends PureComponent<PullRefreshProps> {
-  private divRef = React.createRef<HTMLDivElement>()
   static initialTouch = {
     clientY: 0,
     scrollTop: 0
@@ -47,8 +46,7 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
   }
 
   componentDidMount() {
-    // TODO: 优化
-    // 初始化数据后通过回调的形式来改变 footerStatus，避免文案会闪变
+    // 初始化数据后通过回调的形式来改变 footerStatus，避免文案闪变
     this.props.initData(() => {
       this.setState({
         footerStatus: STATUS.pullUpLoad
@@ -101,14 +99,14 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
     const {
       hasMore,
       noMoreDataText = '无更多数据',
-      pullUpLoadHint = '上拉页面加载更多数据',
+      pullUpLoadText = '上拉页面加载更多数据',
       loadingText = '正在加载'
     } = this.props;
     const { footerStatus } = this.state;
     const footerText = footerStatus === STATUS.pullUpLoad ? (
       <>
         <img src={dropDownSvg} alt=""/>
-        <span>{pullUpLoadHint}</span>
+        <span>{pullUpLoadText}</span>
       </>
     ) : footerStatus === STATUS.loading ? (
       <>
@@ -123,10 +121,9 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
     if (!this.canRefresh()) {
       return;
     }
-    const ref = e.currentTarget;
     PullRefresh.initialTouch = {
       clientY: e.touches[0].clientY,
-      scrollTop: ref.scrollTop
+      scrollTop: e.currentTarget.scrollTop
     }
   }
 
@@ -134,21 +131,18 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
     if (!this.canRefresh()) {
       return;
     }
-    const { distancePullToRefresh = 60 } = this.props;
+    const { distancePullDownRefresh = 60 } = this.props;
     const touchDistance = e.touches[0].clientY - PullRefresh.initialTouch.clientY;
     const { scrollTop } = e.currentTarget;
     // 下拉页面 && 到了页面顶部
     if (touchDistance > 0 && scrollTop <= 0) {
-      // 应该下拉的距离。因为 touchStart 的时候可能存在 scrollTop，所以需要减去初始的 scrollTop
+      // 页面内容下拉的距离。因为 touchStart 的时候可能存在 scrollTop，所以需要减去初始的 scrollTop
       let pullDistance = touchDistance - PullRefresh.initialTouch.scrollTop;
-      if (pullDistance < 0) {
-        pullDistance = 0;
-        PullRefresh.initialTouch.scrollTop = touchDistance;
-      }
+      // easing 函数时计算出适当的下拉距离，防止下拉距离过大
       const pullHeight = this.easing(pullDistance);
       this.setState({
         pullHeight,
-        headerStatus: pullHeight > distancePullToRefresh ? STATUS.loosenRefresh : STATUS.pullToRefresh,
+        headerStatus: pullHeight > distancePullDownRefresh ? STATUS.loosenRefresh : STATUS.pullToRefresh,
       })
     }
   }
@@ -167,8 +161,10 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
       if (refreshFn) {
         refreshFn(() => {
           this.setState({
+            // 刷新完成后将 header 置为刷新完成的状态
             headerStatus: STATUS.refreshed,
           }, () => {
+            // 500ms 后隐藏掉刷新完成的文案
             setTimeout(() => {
               this.setState({
                 headerStatus: STATUS.init,
@@ -186,6 +182,7 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
     }
   }
 
+  // 如果没有传递刷新函数，或者 header 正在刷新、footer 正在加载，则视为当前不能刷新
   canRefresh = () => {
     const { refreshFn } = this.props;
     const { headerStatus } = this.state;
@@ -198,8 +195,6 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
   }
 
   scroll = (e: any) => {
-    // TODO：可以不使用 ref 而使用 e.currentTarget？
-    // const ref = this.divRef.current;
     const ref = e.currentTarget as HTMLDivElement;
     const { hasMore, loadFn, distancePullUpLoad = 0 } = this.props;
     const { footerStatus } = this.state;
@@ -223,8 +218,8 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
   }
 
   render() {
-    const { pullHeight, headerStatus } = this.state;
-    const { className = '' } = this.props;
+    const { pullHeight, headerStatus, footerStatus } = this.state;
+    const { hasMore, className = '' } = this.props;
     const style = pullHeight ? {
       transform: `translateY(${pullHeight}px)`
     } : undefined;
@@ -232,7 +227,6 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
     return (
       <div
         className={`dangosky-pull-refresh-container status-${headerStatus} ${className}`}
-        ref={this.divRef}
         onScroll={this.scroll}
         onTouchStart={this.touchStart}
         onTouchMove={this.touchMove}
@@ -244,7 +238,7 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
         <div className="dangosky-body" style={style}>
           {this.props.children}
         </div>
-        <div className="dangosky-footer">
+        <div className={`dangosky-footer footer-status-${!hasMore ? 'no-more-data' : footerStatus}`}>
           {this.renderFooter()}
         </div>
       </div>

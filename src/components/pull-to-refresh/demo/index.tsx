@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import PullRefresh from '../index';
 import './style.less';
 
-const ARR = Array.from(Array(25)).map((item, index) => index + 1);
+const ARR = Array.from(Array(15)).map((item, index) => index + 1);
 
 interface State {
   list: number[]
@@ -18,26 +18,23 @@ export default class Demo extends PureComponent<{}, State> {
 
   // initData = (resolve) => {
   //   setTimeout(() => {
-  //     console.log(this.state.list);
   //     this.setState({
   //       list: ARR
-  //     }, () => {
-  //       console.log(this.state.list);
-  //     })
+  //     });
+  //     resolve();
   //   }, 1000);
   // }
 
   fetchData = () => {
     return new Promise(resolve => {
       setTimeout(() => {
-        console.log(this.state.list);
         this.setState({
           list: this.state.list.concat(ARR)
         }, () => {
           console.log(this.state.list);
         })
         resolve();
-      }, 1000);
+      }, 3000);
     })
   }
 
