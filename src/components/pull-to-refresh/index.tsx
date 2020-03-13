@@ -51,6 +51,7 @@ class PullRefresh extends PureComponent<PullRefreshProps> {
 
   componentDidMount() {
     this.props.initData(() => {
+      // 初始化数据完成后改变 footer 的状态，避免刚打开页面时文案闪变
       this.setState({
         footerStatus: this.props.hasMore ? STATUS.pullUpLoad : STATUS.init
       })
